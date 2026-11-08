@@ -1,0 +1,49 @@
+origin,target,picked
+2000,Avg Temp,recent10
+2000,Max Tmax,ens_team_ridge
+2000,ToT Prcp,ens_team_ridge
+2000,cdd,ses
+2001,Avg Temp,recent10
+2001,Max Tmax,ens_team_ridge
+2001,ToT Prcp,ens_team_ridge
+2001,cdd,ses
+2002,Avg Temp,recent10
+2002,Max Tmax,ens_team_ridge
+2002,ToT Prcp,ens_team_ridge
+2002,cdd,ses
+2003,Avg Temp,recent10
+2003,Max Tmax,ens_team_ridge
+2003,ToT Prcp,ens_team_ridge
+2003,cdd,ses
+2004,Avg Temp,recent10
+2004,Max Tmax,ens_team_ridge
+2004,ToT Prcp,ens_team_ridge
+2004,cdd,recent10
+2005,Avg Temp,recent10
+2005,Max Tmax,ens_team_ridge
+2005,ToT Prcp,ens_team_ridge
+2005,cdd,recent10
+2006,Avg Temp,recent10
+2006,Max Tmax,ens_team_ridge
+2006,ToT Prcp,ens_team_ridge
+2006,cdd,recent10
+2007,Avg Temp,recent10
+2007,Max Tmax,ens_team_ridge
+2007,ToT Prcp,ens_team_ridge
+2007,cdd,recent10
+2008,Avg Temp,recent10
+2008,Max Tmax,ens_team_ridge
+2008,ToT Prcp,ens_team_ridge
+2008,cdd,ses
+2009,Avg Temp,recent10
+2009,Max Tmax,ens_team_ridge
+2009,ToT Prcp,ens_team_ridge
+2009,cdd,ses
+2010,Avg Temp,recent10
+2010,Max Tmax,ens_team_ridge
+2010,ToT Prcp,ens_team_ridge
+2010,cdd,ses
+2011,Avg Temp,recent10
+2011,Max Tmax,ens_team_ridge
+2011,ToT Prcp,ens_team_ridge
+2011,cdd,ses
