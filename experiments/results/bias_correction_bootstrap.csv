@@ -1,0 +1,5 @@
+model,score_lo,score_hi,diff_vs_team,diff_lo,diff_hi,P(beats team)
+team_selected,0.2169,7.4387,0.0,0.0,0.0,0.0
+bias_global,-5.5152,7.7517,-2.3268,-6.1724,0.5906,0.0745
+bias_half,-2.0438,8.1444,-0.5445,-2.4209,0.9256,0.2765
+bias_region,-8.6678,6.0179,-4.7593,-9.252,-1.1386,0.001
