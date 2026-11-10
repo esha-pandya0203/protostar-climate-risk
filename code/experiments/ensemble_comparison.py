@@ -1,8 +1,8 @@
 """Four fixed Protostar ensembles with explicit evaluation coverage.
 
 Run at repo root:
-    python experiments/ensemble_comparison.py --quick
-    python experiments/ensemble_comparison.py
+    python code/experiments/ensemble_comparison.py --quick
+    python code/experiments/ensemble_comparison.py
 
 Place next to model_comparison.py and arima_comparison.py.
 No 2019+ observations are used. Does not update submission.csv.

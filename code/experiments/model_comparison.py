@@ -12,8 +12,8 @@ metrics, on strict official values (at most 10 missing days). Skill here is not 
 
 Run from the repository root:
     pip install datasets pandas numpy matplotlib scikit-learn
-    python experiments/model_comparison.py            # full run
-    python experiments/model_comparison.py --quick    # two origins, for a smoke test
+    python code/experiments/model_comparison.py            # full run
+    python code/experiments/model_comparison.py --quick    # two origins, for a smoke test
 """
 import argparse
 import itertools
