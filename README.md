@@ -1,5 +1,5 @@
 ---
-pretty_name: "Protostar Climate Challenge Submission: <Team Name>"
+pretty_name: "Protostar Climate Challenge Submission: Starima"
 license: cc-by-4.0
 task_categories:
 - time-series-forecasting
@@ -14,7 +14,7 @@ configs:
     path: submission.csv
 ---
 
-# <Team Name>: Protostar Climate Challenge Submission
+# Starima: Protostar Climate Challenge Submission
 
 **Negative result:** no
 
@@ -28,10 +28,10 @@ Forecasts of yearly weather for 210 U.S. cities, 2019–2025, made as of the end
 
 | Name | Hugging Face username | University, Program |
 |---|---|---|
-| Abdullah Arshad | <@username> | <University, Program> |
-| Tanisha | <@username> | <University, Program> |
-| Imama | <@username> | <University, Program> |
-| Esha | <@username> | <University, Program> |
+| Esha Pandya | [@epandya](https://huggingface.co/epandya) | <University, Program> |
+| Imama Zahoor | [@julycodes](https://huggingface.co/julycodes) | <University, Program> |
+| Tanisha Kumar | [@TanishaKr07](https://huggingface.co/TanishaKr07) | <University, Program> |
+| Abdullah Arshad | [@Aarshad2](https://huggingface.co/Aarshad2) | <University, Program> |
 
 ## Method
 
