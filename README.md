@@ -1,30 +1,43 @@
 ---
-pretty_name: Protostar Climate Risk Intelligence — 2019–2025 forecasts
+pretty_name: "Protostar Climate Challenge Submission: <Team Name>"
+license: cc-by-4.0
+task_categories:
+- time-series-forecasting
+tags:
+- climate
+- forecasting
+- protostar-climate-2026
+configs:
+- config_name: default
+  data_files:
+  - split: test
+    path: submission.csv
 ---
-# Protostar Climate Risk Intelligence: 2019–2025 forecasts for 210 U.S. cities
 
-**Negative result: no**
+# <Team Name>: Protostar Climate Challenge Submission
 
-**Team:** Abdullah Arshad, Tanisha, Imama, Esha
+**Negative result:** no
 
-We forecast four yearly measures for 210 cities over 2019–2025: average temperature, total precipitation, hottest day and cooling degree days (CDD). We used only records up to 2018-12-31.
+Forecasts of yearly weather for 210 U.S. cities, 2019–2025, made as of the end of 2018 (no data that reveals 2019–2025 weather), for the [Protostar Challenge: Climate Risk Intelligence](https://huggingface.co/spaces/CMU-OSPO/protostar-challenge-climate-risk-intelligence).
 
 - **What we submit:** an ensemble. Each forecast is a fixed blend of three components: the team's per-target rules (50%), a Ridge regression pooled over all cities (25%) and a regional factor model (25%).
 - **How we chose it:** we tested it on past data, standing at each year from 1990 to 2011 and forecasting the next seven years. The ensemble scored **4.96**, against **4.30** for its strongest component alone (the team's rules) and 0 for the 30-year average. On this score, 0 means no better than the 30-year average and 100 means a perfect forecast.
 - **Policy idea:** a Climate-Adjusted Cooling Planning Standard. City buildings and utilities would plan cooling with warming-adjusted forecasts instead of 30-year "normals", which in our tests consistently underestimated cooling demand (also in [`POLICY_IDEA.md`](POLICY_IDEA.md)).
 
-## Repository contents
+## Team
 
-| Path                                    | Contents                                                                                                                                                                        |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `submission.csv`                      | 5,880 forecasts (210 cities × 7 years × 4 metrics) in the template's row order                                                                                                |
-| `code/Protostar_Final_Pipeline.ipynb` | The full pipeline: loads the data, cleans it, tests the methods on past data, selects them and writes `submission.csv` and `data/`. It is saved with its outputs.           |
-| `code/experiments/`                   | Scripts that compare other models with the team's rules on past data, and their results (`results/`)                                                                          |
-| `code/integration/`                   | Joins the challenge stations with NOAA GHCN-Daily and NOAA station histories (metadata only), and checks every detected station-change jump against them |
-| `code/requirements.txt`               | The exact package versions used to produce `submission.csv`                                                                                                                   |
-| `data/`                               | Curated data written by the notebook: cleaned values, quality flags, detected station-change jumps, the forecast from each model and the backtest rows. See `data/README.md`. |
+| Name | Hugging Face username | University, Program |
+|---|---|---|
+| Abdullah Arshad | <@username> | <University, Program> |
+| Tanisha | <@username> | <University, Program> |
+| Imama | <@username> | <University, Program> |
+| Esha | <@username> | <University, Program> |
 
 ## Method
+
+- **Model:** an ensemble with fixed weights: 50% the team's per-target rules, 25% a Ridge regression pooled over all cities and 25% a three-factor regional model (details below).
+- **Features:** each city's own history up to 2018: the last 10–30 years of each metric, the trend over 30 years pooled with neighbouring cities, and daily temperatures for CDD. Ridge also uses latitude, longitude and neighbour and national averages. The regional model uses climate patterns shared across cities over the last 40 years.
+- **How we checked it:** we stood at each year from 1990 to 2011, used only earlier data, and forecast the next seven years. The ensemble scored 4.96, against 4.30 for the team's rules alone. On the last fully observed block (data up to 2011, predicting 2012–2018), it scored 8.12 overall and 19.2 for CDD, against 6.72 and 16.6 for the team's rules. That block was among those used to set the weights, so it is a sanity check, not an independent test.
 
 ### Data and cleaning
 
@@ -114,30 +127,6 @@ Scripts and results for all of these are in `code/experiments/`.
 
 **Limitation:** the forecasts still run slightly cold. In the backtest, CDD averages −58 °F-days for start years 2000–2011.
 
-## Reproducing the forecasts
-
-```bash
-pip install -r code/requirements.txt
-jupyter nbconvert --to notebook --execute --inplace code/Protostar_Final_Pipeline.ipynb
-```
-
-- **Output:** `submission.csv` and `data/` at the repository root, whether the notebook is run from the root or from `code/`.
-- **Runtime:** a few minutes on a laptop, plus the dataset download from Hugging Face.
-- **Tested with:** Python 3.14.6.
-- **Data versions:** the notebook loads the challenge dataset at commit `bbbdebdab2a18e00f97ef87bd3f35a71e222180b` and the template at `09e2cefb5e6b64b4fba65d6c3e74c47277d7c0a4`, so later updates to either cannot change the results.
-- **Check:** a fresh run from this layout reproduced `submission.csv` byte for byte.
-
-The comparison scripts load the notebook's pipeline themselves, so nothing has to be run first:
-
-```bash
-python code/experiments/ensemble_comparison.py        # ensemble backtest (~1 min); --quick for a smoke test
-python code/experiments/model_comparison.py           # baselines, smoothing, ML (~8 min)
-python code/experiments/arima_comparison.py           # ARIMA, Theta, regional model, stationarity (~23 min)
-python code/experiments/error_analysis.py --diagnostics-only
-python code/experiments/bias_correction.py
-python code/integration/noaa_station_metadata.py    # NOAA metadata join and break audit (~1 min, needs internet)
-```
-
 ## Reuse and extensibility
 
 - **`data/labels_final.csv.gz`** gives, for each city-year and metric, the official value, the infilled value, the station-change adjustment and the value used at 2018. Other teams can start from cleaned values instead of rebuilding the cleaning.
@@ -171,17 +160,24 @@ The challenge's station IDs (for example `USW00023185`, Reno) are standard NOAA 
 - **An ensemble of components that see different information** (one city, all cities, regional patterns), with fixed weights and a walk-forward check that the choice holds up without hindsight.
 - **An automated audit of station-change jumps against two independent metadata sources**, turning a data-cleaning step into feedback the dataset maintainers can act on.
 
-## Policy Idea: Climate-Adjusted Cooling Planning Standard
+## AI Tools and Agents
 
-_Plan cooling for the climate we forecast, not the one we had._
+- **Tools and models:** Claude Code (Anthropic, model Claude Opus 5.5).
+- **What they did:** reran and reviewed the pipeline, wrote and ran the comparison scripts in `code/experiments/`, added the ensemble to the notebook and checked it against an independent recomputation, built the NOAA metadata audit in `code/integration/`, pulled the policy and feedback examples from the data, and drafted the documentation.
+- **What a person reviewed:** the team checked the outputs against the saved results and reviewed all of the text.
+- **Agent instructions file:** `code/AGENTS.md`, from the template.
 
-**What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual CDD exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project higher cooling demand across all 207 evaluated U.S. cities, with a median increase of 11% over historical averages. We also identified undocumented weather station changes and inconsistent records that can distort climate projections, highlighting the need for more reliable, forward-looking climate planning.
+No AI tool produced forecast values: every value in `submission.csv` comes from the notebook's models, run on data up to 2018.
 
-**What would we do about it, and who would do it?** Cities should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
+## Policy Idea
 
-**Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help cities maintain reliable cooling without escalating long-term costs or environmental impacts.
+_Climate-Adjusted Cooling Planning Standard: plan cooling for the climate we forecast, not the one we had._ The same text is also in [`POLICY_IDEA.md`](POLICY_IDEA.md).
 
-The same text is available as a standalone document in [`POLICY_IDEA.md`](POLICY_IDEA.md).
+1. **What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual CDD exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project higher cooling demand across all 207 evaluated U.S. cities, with a median increase of 11% over historical averages. We also identified undocumented weather station changes and inconsistent records that can distort climate projections, highlighting the need for more reliable, forward-looking climate planning.
+
+2. **What would we do about it, and who would do it?** Cities should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
+
+3. **Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help cities maintain reliable cooling without escalating long-term costs or environmental impacts.
 
 ## Feedback to the Ecosystem
 
@@ -210,15 +206,52 @@ The same text is available as a standalone document in [`POLICY_IDEA.md`](POLICY
 5. **Station coordinates disagree with NOAA's.** For 18 of 210 stations, the coordinates in the challenge dataset are more than 1 km from NOAA's for the same ID: Corpus Christi by 11.1 km, Los Angeles by 6.0 km and Chicago by 3.9 km. Any distance-based method, such as nearest neighbours or regional pooling, inherits this error.
    **Fix:** publish coordinates for each station period, or state which station the coordinates refer to.
 
-## AI tools used
+## Files
 
-- **Claude Code (Anthropic, model Claude Opus 5.5).** We used it to rerun and review the pipeline, write and run the comparison scripts in `code/experiments/`, add the ensemble to the notebook and check it against an independent recomputation, build the NOAA metadata audit in `code/integration/`, pull the policy and feedback examples from the data, and draft the documentation. The team checked its outputs against the saved results and reviewed all of the text.
+| File | Content |
+|---|---|
+| `submission.csv` | Our forecasts: `city_id,year,metric,predicted_value` |
+| `code/Protostar_Final_Pipeline.ipynb` | The full pipeline: loads the data, cleans it, tests the methods on past data, selects them and writes `submission.csv` and `data/`. It is saved with its outputs. |
+| `code/experiments/` | Scripts that compare other models with the ensemble's components on past data, and their results (`results/`) |
+| `code/integration/` | Joins the challenge stations with NOAA GHCN-Daily and NOAA station histories (metadata only), and checks every detected station-change jump against them |
+| `code/check_submission.py`, `code/AGENTS.md` | From the template: the submission checker and the instructions for AI agents |
+| `code/requirements.txt` | The exact package versions used to produce `submission.csv` |
+| `POLICY_IDEA.md` | The policy idea as a standalone document |
+| `data/` | The curated data our code writes and uses; described in its data card, [`data/README.md`](data/README.md) |
 
-No AI model was used as a forecasting input, so no model trained on post-2018 data feeds the forecasts.
+**Metric codes:** `annual_avg_temp` (°F), `total_precip_in` (inches), `hottest_day_temp` (°F), `cdd` (°F-days).
+**City IDs:** the station `ID` from the `city_info` table of the training dataset (e.g., Pittsburgh = `USW00094823`).
 
-## External data sources
+## How to Reproduce
 
-- **Forecast inputs:** only [`CMU-OSPO/protostar-climate-train-to-2018`](https://huggingface.co/datasets/CMU-OSPO/protostar-climate-train-to-2018), plus the row order from `CMU-OSPO/protostar-climate-submission-template`.
-- **Audit only, not used by the forecasts:** NOAA station metadata, with events up to 2018-12-31 only.
+1. Install the packages: `pip install -r code/requirements.txt` (tested with Python 3.14.6).
+2. Run the notebook from top to bottom: `jupyter nbconvert --to notebook --execute --inplace code/Protostar_Final_Pipeline.ipynb`. It loads the pinned training data and writes `submission.csv` and `data/` at the repository root, whether it's run from the root or from `code/`.
+3. Check the result: `python code/check_submission.py`.
+
+- **Runtime:** a few minutes on a laptop, plus the dataset download from Hugging Face.
+- **Data versions:** the notebook loads the challenge dataset at commit `bbbdebdab2a18e00f97ef87bd3f35a71e222180b` and the template at `09e2cefb5e6b64b4fba65d6c3e74c47277d7c0a4`, so later updates to either cannot change the results.
+- **Check:** a fresh run from this layout reproduced `submission.csv` byte for byte.
+
+The comparison scripts load the notebook's pipeline themselves, so nothing has to be run first:
+
+```bash
+python code/experiments/ensemble_comparison.py        # ensemble backtest (~1 min); --quick for a smoke test
+python code/experiments/model_comparison.py           # baselines, smoothing, ML (~8 min)
+python code/experiments/arima_comparison.py           # ARIMA, Theta, regional model, stationarity (~23 min)
+python code/experiments/error_analysis.py --diagnostics-only
+python code/experiments/bias_correction.py
+python code/integration/noaa_station_metadata.py    # NOAA metadata join and break audit (~1 min, needs internet)
+```
+
+## Data
+
+- **External data:** NOAA station metadata, with events up to 2018-12-31 only. It was used for the analysis and the feedback, not for the forecasts.
   - [GHCN-Daily station list](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)
-  - [NOAA Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/access/homr/), the station histories
+  - [NOAA Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/access/homr/)
+- **Forecast inputs:** only the training data below, plus the row order from `CMU-OSPO/protostar-climate-submission-template`.
+- **Curated data:** see the data card in [`data/README.md`](data/README.md) (each file, its source, license and preparation).
+
+Training data: [`CMU-OSPO/protostar-climate-train-to-2018`](https://huggingface.co/datasets/CMU-OSPO/protostar-climate-train-to-2018), from:
+
+- Lai, Y., & Dzombak, D. A. (2019). Compiled historical daily temperature and precipitation data for selected 210 U.S. cities. Carnegie Mellon University. https://doi.org/10.1184/R1/7890488.v6
+- Lai, Y., & Dzombak, D. A. (2019). *Use of historical data to assess regional climate change.* Journal of Climate, 32(14), 4299–4320. https://doi.org/10.1175/JCLI-D-18-0630.1
