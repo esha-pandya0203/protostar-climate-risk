@@ -12,8 +12,8 @@ AICc then picks the order among models with that d, because AIC is not comparabl
 
 Run from the repository root:
     pip install datasets pandas numpy matplotlib scikit-learn statsmodels joblib
-    python experiments/arima_comparison.py            # full run
-    python experiments/arima_comparison.py --quick    # two origins, for a smoke test
+    python code/experiments/arima_comparison.py            # full run
+    python code/experiments/arima_comparison.py --quick    # two origins, for a smoke test
 """
 import argparse
 import os

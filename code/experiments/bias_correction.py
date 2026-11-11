@@ -10,7 +10,7 @@ Variants (all computed per target and per horizon step h = 1..7):
     bias_region  team + each city's past miss, median-pooled over the city and its neighbours
 
 Run from the repository root, next to model_comparison.py:
-    python experiments/bias_correction.py
+    python code/experiments/bias_correction.py
 
 """
 import os

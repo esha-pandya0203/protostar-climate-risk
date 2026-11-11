@@ -1,0 +1,5 @@
+,method
+Avg Temp,lag_mean10_a0.5
+ToT Prcp,recent30_median
+Max Tmax,recent30_median
+cdd,delta_a0.75

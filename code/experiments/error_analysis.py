@@ -1,9 +1,9 @@
 """Experimental improvements to the Protostar 2018-cutoff forecasting pipeline.
 
 Run from the project root:
-    python experiments/error_analysis.py --diagnostics-only
-    python experiments/error_analysis.py --quick
-    python experiments/error_analysis.py
+    python code/experiments/error_analysis.py --diagnostics-only
+    python code/experiments/error_analysis.py --quick
+    python code/experiments/error_analysis.py
 
 This imports the existing notebook via model_comparison.load_team_pipeline().
 It does NOT edit the final notebook or submission.csv. No post-2018 data is loaded.
