@@ -11,7 +11,7 @@ We forecast four yearly measures for 210 cities over 2019–2025: average temper
 
 - **What we submit:** an ensemble. Each forecast is a fixed blend of three components: the team's per-target rules (50%), a Ridge regression pooled over all cities (25%) and a regional factor model (25%).
 - **How we chose it:** we tested it on past data, standing at each year from 1990 to 2011 and forecasting the next seven years. The ensemble scored **4.96**, against **4.30** for its strongest component alone (the team's rules) and 0 for the 30-year average. On this score, 0 means no better than the 30-year average and 100 means a perfect forecast.
-- **Policy idea ([`POLICY_IDEA.md`](POLICY_IDEA.md)):** plan cooling capacity using forecasts like these rather than 30-year "normals", which in our tests consistently underestimated cooling demand.
+- **Policy idea:** a Pittsburgh Climate-Adjusted Cooling Planning Standard. City buildings and utilities would plan cooling with warming-adjusted forecasts instead of 30-year "normals", which in our tests consistently underestimated cooling demand (also in [`POLICY_IDEA.md`](POLICY_IDEA.md)).
 
 ## Repository contents
 
@@ -20,6 +20,7 @@ We forecast four yearly measures for 210 cities over 2019–2025: average temper
 | `submission.csv`                      | 5,880 forecasts (210 cities × 7 years × 4 metrics) in the template's row order                                                                                                |
 | `code/Protostar_Final_Pipeline.ipynb` | The full pipeline: loads the data, cleans it, tests the methods on past data, selects them and writes `submission.csv` and `data/`. It is saved with its outputs.           |
 | `code/experiments/`                   | Scripts that compare other models with the team's rules on past data, and their results (`results/`)                                                                          |
+| `code/integration/`                   | Joins the challenge stations with NOAA GHCN-Daily and NOAA station histories (metadata only), and checks every detected station-change jump against them |
 | `code/requirements.txt`               | The exact package versions used to produce `submission.csv`                                                                                                                   |
 | `data/`                               | Curated data written by the notebook: cleaned values, quality flags, detected station-change jumps, the forecast from each model and the backtest rows. See `data/README.md`. |
 
@@ -27,7 +28,7 @@ We forecast four yearly measures for 210 cities over 2019–2025: average temper
 
 ### Data and cleaning
 
-The only weather data is the challenge dataset, [`CMU-OSPO/protostar-climate-train-to-2018`](https://huggingface.co/datasets/CMU-OSPO/protostar-climate-train-to-2018): `annual_indices`, `daily` and `city_info`. The only other input is the official submission template, used for row order. The notebook stops if any input is dated after 2018.
+The only weather data is the challenge dataset, [`CMU-OSPO/protostar-climate-train-to-2018`](https://huggingface.co/datasets/CMU-OSPO/protostar-climate-train-to-2018): `annual_indices`, `daily` and `city_info`. The only other input is the official submission template, used for row order. The notebook stops if any input is dated after 2018. Both Hugging Face datasets are loaded at pinned versions. NOAA station metadata is used only to audit the data (see Interoperability and integration), never as a forecast input.
 
 - **Quality counts:** missing days are counted from `daily`. The notebook checks that these counts match the dataset's own `Miss` columns, and that the number of valid city-years under the official rule (at most 10 missing days) matches the expected totals.
 - **Missing days (Avg Temp and CDD only):** a city-year may have up to 30 missing days. Each missing day is filled with that city's average for the same calendar day over the previous 10 years, smoothed over ±7 days.
@@ -123,6 +124,7 @@ jupyter nbconvert --to notebook --execute --inplace code/Protostar_Final_Pipelin
 - **Output:** `submission.csv` and `data/` at the repository root, whether the notebook is run from the root or from `code/`.
 - **Runtime:** a few minutes on a laptop, plus the dataset download from Hugging Face.
 - **Tested with:** Python 3.14.6.
+- **Data versions:** the notebook loads the challenge dataset at commit `bbbdebdab2a18e00f97ef87bd3f35a71e222180b` and the template at `09e2cefb5e6b64b4fba65d6c3e74c47277d7c0a4`, so later updates to either cannot change the results.
 - **Check:** a fresh run from this layout reproduced `submission.csv` byte for byte.
 
 The comparison scripts load the notebook's pipeline themselves, so nothing has to be run first:
@@ -133,6 +135,7 @@ python code/experiments/model_comparison.py           # baselines, smoothing, ML
 python code/experiments/arima_comparison.py           # ARIMA, Theta, regional model, stationarity (~23 min)
 python code/experiments/error_analysis.py --diagnostics-only
 python code/experiments/bias_correction.py
+python code/integration/noaa_station_metadata.py    # NOAA metadata join and break audit (~1 min, needs internet)
 ```
 
 ## Reuse and extensibility
@@ -142,9 +145,43 @@ python code/experiments/bias_correction.py
 - **The comparison scripts** run against the notebook itself rather than copies of it. A new model can be added to `code/experiments/` and scored on exactly the same rows as ours.
 - **`data/ensemble_components_2019_2025.csv`** gives each model's forecast for every row, so other weightings can be tried without rerunning anything.
 
-## Policy Idea
+## Interoperability and integration
 
-**Plan cooling for the climate we forecast, not the one we had.** The full policy idea (risk, action and who takes it, and why it is sustainable) is in [`POLICY_IDEA.md`](POLICY_IDEA.md).
+The challenge's station IDs (for example `USW00023185`, Reno) are standard NOAA GHCN-Daily identifiers, and every file in `data/` is keyed by them. Our outputs therefore join directly with NOAA's records, and with any other dataset that uses GHCN-Daily IDs. `code/integration/noaa_station_metadata.py` makes that join in about a minute. NOAA station metadata isn't weather data, and only events dated up to 2018-12-31 are kept. It doesn't feed the forecasts.
+
+- **NOAA GHCN-Daily station list:** all 210 IDs are found. The join adds elevation, and flags the 40 stations in NOAA's long-term climate networks (HCN/CRN). It also shows that for 18 stations, the challenge dataset's coordinates are more than 1 km from NOAA's: up to 11.1 km for Corpus Christi and 6.0 km for Los Angeles (`data/ghcnd_station_crosswalk.csv`).
+- **NOAA station histories (HOMR):** 644 dated relocations and changes of temperature equipment up to 2018 for the 210 stations (`data/noaa_homr_events_to_2018.csv`). `city_info` lists only switches between named stations, so most of these events aren't in the challenge data.
+- **Cross-check of our station-change correction:** our pipeline corrected 95 average-temperature jumps. Of these, 13 match a `city_info` change within a year, and 18 more match a NOAA relocation or equipment change. Counting only jumps in years that the current station's NOAA history covers, 29 of 76 are explained and **47 (62%) have no documented cause** (`data/station_break_attribution.csv`). Example: Los Angeles's −1.9 °F jump in 1999 matches a 3.5-mile relocation in July 1999 that `city_info` doesn't list.
+- **What limited the integration:**
+  - The join itself was easy because the IDs are shared.
+  - NOAA's station history covers only a city's current station, so jumps from earlier stations in a combined record can't be checked against it.
+  - NOAA's JSON service sometimes returned truncated responses under parallel requests, which the script handles with retries.
+  - Coordinates disagree between the two sources, so joining on location instead of ID would mismatch some stations.
+
+## Who would use this, and could it work in practice?
+
+- **Utilities and public utility commissions:** the CDD forecasts and the policy idea, for peak-load and capacity planning. It's practical because it needs only public station data and runs in minutes. It has limits: the forecasts are yearly city totals, which a utility would still have to translate into peak loads, and their gain over 30-year normals is modest. Most of that gain is in temperature and CDD.
+- **Researchers and future challenge teams:** cleaned values, audit files, and a test harness that scores any new model on exactly our rows.
+- **Dataset maintainers (CMU-OSPO, and NOAA for the underlying records):** a list of 152 detected jumps, each matched against two metadata sources, as a starting point for documenting station history.
+
+## What is new
+
+- **CDD from warmed daily temperatures:** instead of extending a yearly CDD trend, we warm each of the last 15 years of daily temperatures by the projected trend and recompute CDD. Only days above 65 °F count towards CDD, and this approach accounts for that.
+- **Cleaning that is tested for leakage too:** the station-change correction uses only data up to each start year, so the cleaning itself passes the same leakage test as the forecasts.
+- **An ensemble of components that see different information** (one city, all cities, regional patterns), with fixed weights and a walk-forward check that the choice holds up without hindsight.
+- **An automated audit of station-change jumps against two independent metadata sources**, turning a data-cleaning step into feedback the dataset maintainers can act on.
+
+## Policy Idea: Pittsburgh Climate-Adjusted Cooling Planning Standard
+
+_Plan cooling for the climate we forecast, not the one we had._
+
+**What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual demand exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project Pittsburgh's CDD to be 13% above its historical average. We also identified undocumented weather station changes and inconsistent records that can distort climate projections.
+
+**What would we do about it, and who would do it?** Pittsburgh should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
+
+**Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help Pittsburgh maintain reliable cooling without escalating long-term costs or environmental impacts.
+
+The same text is available as a standalone document in [`POLICY_IDEA.md`](POLICY_IDEA.md).
 
 ## Feedback to the Ecosystem
 
@@ -152,27 +189,36 @@ python code/experiments/bias_correction.py
 
 **What got in the way, and what would fix it:**
 
-1. **Station metadata misses most jumps in the records.** Comparing each city with its 8 nearest neighbours found 95 lasting jumps in average temperature, in 90 of the 210 cities. Only 13 fall within a year of a station change listed in `city_info`; for CDD it is 9 of 57. Examples:
+1. **Station metadata misses most jumps in the records, even after adding NOAA's.** Comparing each city with its 8 nearest neighbours found 95 lasting jumps in average temperature, in 90 of the 210 cities.
+   - Only 13 fall within a year of a station change listed in `city_info`.
+   - NOAA's station histories explain 18 more. That still leaves 47 of the 76 jumps that NOAA's history can check (62%) with no documented cause.
+   - For CDD, 9 of 57 jumps match `city_info` and 9 more match NOAA.
 
-   - Reno, +4.1 °F in 1999, with no change listed;
-   - Phoenix, +2.5 °F (+732 CDD) in 1972, with no change listed;
-   - Marquette, −3.6 °F in 1979, which does match the move to Marquette WFO.
+   Examples:
+   - Reno, +4.1 °F in 1999: NOAA records a relocation in 1995 and a sensor change in 2001, but nothing within a year of the jump.
+   - Phoenix, +2.5 °F (+732 CDD) in 1972: nothing in either source.
+   - Los Angeles, −1.9 °F in 1999: matches a 3.5-mile relocation that only NOAA lists.
 
    Some of these jumps may be real local change, such as urban growth. Without metadata a user cannot tell.
-   **Fix:** publish instrument and siting changes, not only station-ID changes, and a list of detected breaks with their likely causes.
+   **Fix:** carry NOAA's relocation and equipment history into `city_info`, keyed by GHCN-Daily ID and including earlier stations. Publish detected breaks, such as our `data/station_break_attribution.csv`, with their likely causes.
 2. **Some cities' records are too gappy to use, and the dataset card doesn't say which.** In 1989–2018, Huntsville fails the 10-missing-day rule in 29 of 30 years for every metric. Elko and Grand Island fail it in 29 of 30 years for precipitation only. Belvidere (27), Escondido (22) and Riverside (18) also fail it in many years.
    **Fix:** add a per-city, per-metric coverage table to the dataset card. The `coverage_and_stations` subset added on November 5 goes part of the way. We did not use it, because our pipeline computes coverage from `daily`.
 3. **Daily values have no quality-control flags.** We found 43 runs where the daily high repeated the same value for a week or more, which is statistically unlikely. They include recent data, such as Galveston at 91 °F for 11 days from 2016-07-31.
    **Fix:** carry the source dataset's quality flags into `daily`.
 4. **The scoring baseline needs a reference implementation.** The rule that a baseline needs at least 10 valid years was clarified on November 6, after teams had computed baselines without it.
    **Fix:** publish a small scoring script that computes the baselines and skill, including the 2011–2018 practice run.
+5. **Station coordinates disagree with NOAA's.** For 18 of 210 stations, the coordinates in the challenge dataset are more than 1 km from NOAA's for the same ID: Corpus Christi by 11.1 km, Los Angeles by 6.0 km and Chicago by 3.9 km. Any distance-based method, such as nearest neighbours or regional pooling, inherits this error.
+   **Fix:** publish coordinates for each station period, or state which station the coordinates refer to.
 
 ## AI tools used
 
-- _TODO: list the AI tools the team used._
+- **Claude Code (Anthropic, model Claude Opus 5.5).** We used it to rerun and review the pipeline, write and run the comparison scripts in `code/experiments/`, add the ensemble to the notebook and check it against an independent recomputation, build the NOAA metadata audit in `code/integration/`, pull the policy and feedback examples from the data, and draft the documentation. The team checked its outputs against the saved results and reviewed all of the text.
 
 No AI model was used as a forecasting input, so no model trained on post-2018 data feeds the forecasts.
 
 ## External data sources
 
-None. The only inputs are `CMU-OSPO/protostar-climate-train-to-2018` and the row order from `CMU-OSPO/protostar-climate-submission-template`.
+- **Forecast inputs:** only [`CMU-OSPO/protostar-climate-train-to-2018`](https://huggingface.co/datasets/CMU-OSPO/protostar-climate-train-to-2018), plus the row order from `CMU-OSPO/protostar-climate-submission-template`.
+- **Audit only, not used by the forecasts:** NOAA station metadata, with events up to 2018-12-31 only.
+  - [GHCN-Daily station list](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt)
+  - [NOAA Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/access/homr/), the station histories
