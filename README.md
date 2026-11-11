@@ -13,7 +13,6 @@ configs:
   - split: test
     path: submission.csv
 ---
-
 # Starima: Protostar Climate Challenge Submission
 
 **Negative result:** no
@@ -26,12 +25,12 @@ Forecasts of yearly weather for 210 U.S. cities, 2019–2025, made as of the end
 
 ## Team
 
-| Name | Hugging Face username | University, Program |
-|---|---|---|
-| Esha Pandya | [@epandya](https://huggingface.co/epandya) | Carnegie Mellon University, HCA |
-| Imama Zahoor | [@julycodes](https://huggingface.co/julycodes) | Carnegie Mellon University, HCA |
-| Tanisha Kumar | [@TanishaKr07](https://huggingface.co/TanishaKr07) | Carnegie Mellon University, HCA |
-| Abdullah Arshad | [@Aarshad2](https://huggingface.co/Aarshad2) | Carnegie Mellon University, HCA |
+| Name            | Hugging Face username                             | University, Program               |
+| --------------- | ------------------------------------------------- | --------------------------------- |
+| Esha Pandya     | [@epandya](https://huggingface.co/epandya)         | Carnegie Mellon University, MSHCA |
+| Imama Zahoor    | [@julycodes](https://huggingface.co/julycodes)     | Carnegie Mellon University, MSHCA |
+| Tanisha Kumar   | [@TanishaKr07](https://huggingface.co/TanishaKr07) | Carnegie Mellon University, MSHCA |
+| Abdullah Arshad | [@Aarshad2](https://huggingface.co/Aarshad2)       | Carnegie Mellon University, MSHCA |
 
 ## Method
 
@@ -58,6 +57,7 @@ forecast = 0.50 × team's rules + 0.25 × Ridge + 0.25 × regional factor model
 ```
 
 **Why blend them:**
+
 - Each component uses different information. The team's rules look at each city on its own, Ridge learns patterns that repeat across all cities, and the regional model uses climate swings shared by many cities.
 - Their errors are only partly correlated, so averaging cancels some of them, and the error drops for all four targets. It doesn't remove the cold bias: for CDD the ensemble runs slightly colder than the team's rules, −22 against −12 °F-days averaged over start years 1990–2011.
 - On their own, Ridge (3.27) and the regional model (3.32) score below the team's rules (4.30). Blended, they lift the score to 4.96.
@@ -96,17 +96,17 @@ The three main climate patterns shared across cities over the last 40 years, eac
 
 ### Results on past data (not the 2019–2025 result)
 
-| Model                                            | Start years 1990–2011 | 1990–1999 | 2000–2011 |
-| ------------------------------------------------ | ---------------------: | ---------: | ---------: |
-| **Ensemble, 50/25/25 (submitted)**               |         **4.96** |       3.06 |       6.26 |
-| Alternative blend: team 75% + regional 25%       |                   4.73 |       2.88 |       5.99 |
-| Alternative blend: team 75% + Ridge 25%          |                   4.67 |       2.83 |       5.92 |
-| Component alone: team's rules                    |                   4.30 |       2.46 |       5.53 |
-| Component alone: regional model (separate run)   |                   3.32 |            |            |
-| Component alone: Ridge (separate run)            |                   3.27 |            |            |
-| Other model: best ARIMA (separate run)           |                   2.13 |            |            |
-| Other models: random forest / gradient boosting (separate run) |  1.57 / 0.83 |            |            |
-| Baseline: repeating last year's value (separate run) |             −26.6 |            |            |
+| Model                                                          | Start years 1990–2011 | 1990–1999 | 2000–2011 |
+| -------------------------------------------------------------- | ---------------------: | ---------: | ---------: |
+| **Ensemble, 50/25/25 (submitted)**                       |         **4.96** |       3.06 |       6.26 |
+| Alternative blend: team 75% + regional 25%                     |                   4.73 |       2.88 |       5.99 |
+| Alternative blend: team 75% + Ridge 25%                        |                   4.67 |       2.83 |       5.92 |
+| Component alone: team's rules                                  |                   4.30 |       2.46 |       5.53 |
+| Component alone: regional model (separate run)                 |                   3.32 |            |            |
+| Component alone: Ridge (separate run)                          |                   3.27 |            |            |
+| Other model: best ARIMA (separate run)                         |                   2.13 |            |            |
+| Other models: random forest / gradient boosting (separate run) |            1.57 / 0.83 |            |            |
+| Baseline: repeating last year's value (separate run)           |                 −26.6 |            |            |
 
 The separate runs score slightly different rows, so compare them only roughly with the first four. Every component scores lower alone than in the ensemble.
 
@@ -174,9 +174,7 @@ No AI tool produced forecast values: every value in `submission.csv` comes from 
 _Climate-Adjusted Cooling Planning Standard: plan cooling for the climate we forecast, not the one we had._ The same text is also in [`POLICY_IDEA.md`](POLICY_IDEA.md).
 
 1. **What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual CDD exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project higher cooling demand across all 207 evaluated U.S. cities, with a median increase of 11% over historical averages. We also identified undocumented weather station changes and inconsistent records that can distort climate projections, highlighting the need for more reliable, forward-looking climate planning.
-
 2. **What would we do about it, and who would do it?** Cities should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
-
 3. **Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help cities maintain reliable cooling without escalating long-term costs or environmental impacts.
 
 ## Feedback to the Ecosystem
@@ -186,11 +184,13 @@ _Climate-Adjusted Cooling Planning Standard: plan cooling for the climate we for
 **What got in the way, and what would fix it:**
 
 1. **Station metadata misses most jumps in the records, even after adding NOAA's.** Comparing each city with its 8 nearest neighbours found 95 lasting jumps in average temperature, in 90 of the 210 cities.
+
    - Only 13 fall within a year of a station change listed in `city_info`.
    - NOAA's station histories explain 18 more. That still leaves 47 of the 76 jumps that NOAA's history can check (62%) with no documented cause.
    - For CDD, 9 of 57 jumps match `city_info` and 9 more match NOAA.
 
    Examples:
+
    - Reno, +4.1 °F in 1999: NOAA records a relocation in 1995 and a sensor change in 2001, but nothing within a year of the jump.
    - Phoenix, +2.5 °F (+732 CDD) in 1972: nothing in either source.
    - Los Angeles, −1.9 °F in 1999: matches a 3.5-mile relocation that only NOAA lists.
@@ -208,16 +208,16 @@ _Climate-Adjusted Cooling Planning Standard: plan cooling for the climate we for
 
 ## Files
 
-| File | Content |
-|---|---|
-| `submission.csv` | Our forecasts: `city_id,year,metric,predicted_value` |
-| `code/Protostar_Final_Pipeline.ipynb` | The full pipeline: loads the data, cleans it, tests the methods on past data, selects them and writes `submission.csv` and `data/`. It is saved with its outputs. |
-| `code/experiments/` | Scripts that compare other models with the ensemble's components on past data, and their results (`results/`) |
-| `code/integration/` | Joins the challenge stations with NOAA GHCN-Daily and NOAA station histories (metadata only), and checks every detected station-change jump against them |
-| `code/check_submission.py`, `code/AGENTS.md` | From the template: the submission checker and the instructions for AI agents |
-| `code/requirements.txt` | The exact package versions used to produce `submission.csv` |
-| `POLICY_IDEA.md` | The policy idea as a standalone document |
-| `data/` | The curated data our code writes and uses; described in its data card, [`data/README.md`](data/README.md) |
+| File                                             | Content                                                                                                                                                               |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submission.csv`                               | Our forecasts: `city_id,year,metric,predicted_value`                                                                                                                |
+| `code/Protostar_Final_Pipeline.ipynb`          | The full pipeline: loads the data, cleans it, tests the methods on past data, selects them and writes `submission.csv` and `data/`. It is saved with its outputs. |
+| `code/experiments/`                            | Scripts that compare other models with the ensemble's components on past data, and their results (`results/`)                                                       |
+| `code/integration/`                            | Joins the challenge stations with NOAA GHCN-Daily and NOAA station histories (metadata only), and checks every detected station-change jump against them              |
+| `code/check_submission.py`, `code/AGENTS.md` | From the template: the submission checker and the instructions for AI agents                                                                                          |
+| `code/requirements.txt`                        | The exact package versions used to produce `submission.csv`                                                                                                         |
+| `POLICY_IDEA.md`                               | The policy idea as a standalone document                                                                                                                              |
+| `data/`                                        | The curated data our code writes and uses; described in its data card, [`data/README.md`](data/README.md)                                                            |
 
 **Metric codes:** `annual_avg_temp` (°F), `total_precip_in` (inches), `hottest_day_temp` (°F), `cdd` (°F-days).
 **City IDs:** the station `ID` from the `city_info` table of the training dataset (e.g., Pittsburgh = `USW00094823`).
