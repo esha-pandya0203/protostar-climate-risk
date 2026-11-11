@@ -11,7 +11,7 @@ We forecast four yearly measures for 210 cities over 2019–2025: average temper
 
 - **What we submit:** an ensemble. Each forecast is a fixed blend of three components: the team's per-target rules (50%), a Ridge regression pooled over all cities (25%) and a regional factor model (25%).
 - **How we chose it:** we tested it on past data, standing at each year from 1990 to 2011 and forecasting the next seven years. The ensemble scored **4.96**, against **4.30** for its strongest component alone (the team's rules) and 0 for the 30-year average. On this score, 0 means no better than the 30-year average and 100 means a perfect forecast.
-- **Policy idea:** a Pittsburgh Climate-Adjusted Cooling Planning Standard. City buildings and utilities would plan cooling with warming-adjusted forecasts instead of 30-year "normals", which in our tests consistently underestimated cooling demand (also in [`POLICY_IDEA.md`](POLICY_IDEA.md)).
+- **Policy idea:** a Climate-Adjusted Cooling Planning Standard. City buildings and utilities would plan cooling with warming-adjusted forecasts instead of 30-year "normals", which in our tests consistently underestimated cooling demand (also in [`POLICY_IDEA.md`](POLICY_IDEA.md)).
 
 ## Repository contents
 
@@ -171,15 +171,15 @@ The challenge's station IDs (for example `USW00023185`, Reno) are standard NOAA 
 - **An ensemble of components that see different information** (one city, all cities, regional patterns), with fixed weights and a walk-forward check that the choice holds up without hindsight.
 - **An automated audit of station-change jumps against two independent metadata sources**, turning a data-cleaning step into feedback the dataset maintainers can act on.
 
-## Policy Idea: Pittsburgh Climate-Adjusted Cooling Planning Standard
+## Policy Idea: Climate-Adjusted Cooling Planning Standard
 
 _Plan cooling for the climate we forecast, not the one we had._
 
-**What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual demand exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project Pittsburgh's CDD to be 13% above its historical average. We also identified undocumented weather station changes and inconsistent records that can distort climate projections.
+**What risk did we notice?** Our backtests found that 30-year climate averages underestimated cooling degree days (CDD) by 118°F-days per city-year, with actual CDD exceeding historical normals in 70% of cases. Our 2019–2025 forecasts project higher cooling demand across all 207 evaluated U.S. cities, with a median increase of 11% over historical averages. We also identified undocumented weather station changes and inconsistent records that can distort climate projections, highlighting the need for more reliable, forward-looking climate planning.
 
-**What would we do about it, and who would do it?** Pittsburgh should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
+**What would we do about it, and who would do it?** Cities should establish a Climate-Adjusted Cooling Planning Standard with local utilities and neighboring municipalities. New and substantially renovated city-owned buildings would be required to use warming-adjusted CDD forecasts for energy-efficient cooling design. Participating utilities would update these projections annually for electricity peak-load and resource planning, with mandatory compliance requiring utility regulation. A shared regional weather database would document station changes and use validated neighboring observations to address missing or inconsistent records, particularly benefiting smaller communities.
 
-**Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help Pittsburgh maintain reliable cooling without escalating long-term costs or environmental impacts.
+**Why is it sustainable?** Integrating forecasts into existing construction approvals and utility planning cycles keeps implementation manageable. Shared weather records reduce duplicated data-processing costs, while passive cooling and building efficiency limit electricity demand and emissions. Earlier utility planning supports demand-response and cleaner energy investments instead of expensive emergency power purchases or unnecessary fossil-fuel capacity. These measures help cities maintain reliable cooling without escalating long-term costs or environmental impacts.
 
 The same text is available as a standalone document in [`POLICY_IDEA.md`](POLICY_IDEA.md).
 
