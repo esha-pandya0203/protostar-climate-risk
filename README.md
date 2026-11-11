@@ -28,10 +28,10 @@ Forecasts of yearly weather for 210 U.S. cities, 2019–2025, made as of the end
 
 | Name | Hugging Face username | University, Program |
 |---|---|---|
-| Esha Pandya | [@epandya](https://huggingface.co/epandya) | <University, Program> |
-| Imama Zahoor | [@julycodes](https://huggingface.co/julycodes) | <University, Program> |
-| Tanisha Kumar | [@TanishaKr07](https://huggingface.co/TanishaKr07) | <University, Program> |
-| Abdullah Arshad | [@Aarshad2](https://huggingface.co/Aarshad2) | <University, Program> |
+| Esha Pandya | [@epandya](https://huggingface.co/epandya) | Carnegie Mellon University, HCA |
+| Imama Zahoor | [@julycodes](https://huggingface.co/julycodes) | Carnegie Mellon University, HCA |
+| Tanisha Kumar | [@TanishaKr07](https://huggingface.co/TanishaKr07) | Carnegie Mellon University, HCA |
+| Abdullah Arshad | [@Aarshad2](https://huggingface.co/Aarshad2) | Carnegie Mellon University, HCA |
 
 ## Method
 
